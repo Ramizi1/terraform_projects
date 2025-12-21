@@ -13,3 +13,9 @@ output "acm_validation" {
 resource "aws_acm_certificate_validation" "ssl_validation" {
   certificate_arn         = aws_acm_certificate.acm_cert.arn
 }
+
+viewer_certificate {
+  acm_certificate_arn = aws_acm_certificate.ssl_cert.arn
+  ssl_support_method = "sni-only"
+  minimum_protocol_version = "TLSv1.2_2019"
+}

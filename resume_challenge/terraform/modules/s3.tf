@@ -24,7 +24,7 @@ resource "aws_s3_bucket_versioning" "version" {
 }
 
 resource "aws_s3_object" "index_html" {
-  bucket = "CV-Web-Bucket-48876"
+  bucket = aws_s3_bucket.web_host.id
   key    = "index.html"
   source = "${path.root}/../frontend/index.html"
   etag = filemd5("${path.root}/../frontend/index.html")
@@ -33,29 +33,26 @@ resource "aws_s3_object" "index_html" {
 
 # Change cdn distro on buck_pol
 
-resource "aws_s3_bucket_policy" "web_bucket_policy" {
+rresource "aws_s3_bucket_policy" "web_bucket_policy" {
   bucket = aws_s3_bucket.web_host.id
 
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowCloudFrontRead",
-resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.website_bucket.id
-      "Principal": {
-        "Service": "cloudfront.amazonaws.com"
-      },
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::CV-Web-Bucket-48876/*",
-      "Condition": {
-        "StringEquals": {
-          "AWS:SourceArn": "arn:aws:cloudfront::147233732413:distribution/DISTRIBUTION_ID"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontRead"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.web_host.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
+          }
         }
       }
-    }
-  ]
-}
-POLICY
+    ]
+  })
 }
