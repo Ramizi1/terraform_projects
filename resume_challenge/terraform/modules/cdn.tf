@@ -19,7 +19,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "Some comment"
+  comment             = "CloudFront distribution for ramizshefkiu.com"
   default_root_object = "index.html"
 
   aliases = [
@@ -46,5 +46,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
         forward = "none"
       }
     }
+  }
+}
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.acm_cert.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2019"
   }
 }
