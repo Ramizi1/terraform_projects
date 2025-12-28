@@ -31,9 +31,14 @@ resource "aws_s3_object" "index_html" {
   content_type = "text/html"
 }
 
-# Change cdn distro on buck_pol
+resource "aws_s3_object" "resume_pdf" {
+  bucket       = aws_s3_bucket.web_host.id
+  key          = "resume.pdf"
+  source       = "${path.root}/../frontend/resume.pdf"
+  content_type = "application/pdf"
+}
 
-rresource "aws_s3_bucket_policy" "web_bucket_policy" {
+resource "aws_s3_bucket_policy" "web_bucket_policy" {
   bucket = aws_s3_bucket.web_host.id
 
   policy = jsonencode({
@@ -55,4 +60,5 @@ rresource "aws_s3_bucket_policy" "web_bucket_policy" {
       }
     ]
   })
+  depends_on = [aws_cloudfront_distribution.s3_distribution]
 }
