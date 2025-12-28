@@ -1,8 +1,8 @@
 resource "aws_cloudfront_origin_access_control" "default" {
-  name                           = "cf-oac"
+  name                              = "cf-oac"
   origin_access_control_origin_type = "s3"
-  signing_behavior               = "always"
-  signing_protocol               = "sigv4"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
 }
 
 locals {
@@ -35,19 +35,13 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
     forwarded_values {
       query_string = false
-    
-  viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.ssl_cert.arn
-    ssl_support_method = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2019"
-    }
 
       cookies {
         forward = "none"
       }
     }
   }
-}
+
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate.acm_cert.arn
     ssl_support_method       = "sni-only"
