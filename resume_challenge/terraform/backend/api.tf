@@ -19,5 +19,12 @@ resource "aws_apigatewayv2_stage" "visitor_stage" {
   api_id = aws_apigatewayv2_api.visitor_api.id
   name        = "$default"
   auto_deploy = true
-  name   = "visitor_stage"
+}
+
+resource "aws_lambda_permission" "allow_APIGW" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_visitor_count.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.visitor_api.execution_arn}/*/*"
 }
