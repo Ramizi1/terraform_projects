@@ -37,28 +37,3 @@ resource "aws_s3_object" "resume_pdf" {
   source       = "${path.root}/../frontend/resume.pdf"
   content_type = "application/pdf"
 }
-
-resource "aws_s3_bucket_policy" "web_bucket_policy" {
-  bucket = aws_s3_bucket.web_host.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowCloudFrontRead"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudfront.amazonaws.com"
-        }
-        Action   = "s3:GetObject"
-        Resource = "${aws_s3_bucket.web_host.arn}/*"
-        Condition = {
-          StringEquals = {
-            "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
-          }
-        }
-      }
-    ]
-  })
-  depends_on = [aws_cloudfront_distribution.s3_distribution]
-}

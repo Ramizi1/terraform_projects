@@ -1,7 +1,7 @@
-output "api_url" {
-  value = "${aws_apigatewayv2_api.visitor_api.api_endpoint}/count"
+output "bucket_id" {
+  value = aws_s3_bucket.web_host.id
 }
 
-output "cloudfront_domain" {
-  value = aws_cloudfront_distribution.cdn.domain_name
+output "bucket_domain" {
+  value = aws_s3_bucket.web_host.bucket_regional_domain_name
 }
