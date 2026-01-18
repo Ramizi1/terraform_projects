@@ -1,6 +1,6 @@
 resource "aws_acm_certificate" "acm_cert" {
-  domain_name       = "ramizshefkiu.com"
-  validation_method = "DNS"
+  domain_name               = "ramizshefkiu.com"
+  validation_method         = "DNS"
   subject_alternative_names = ["www.ramizshefkiu.com"]
 }
 

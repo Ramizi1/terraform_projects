@@ -65,7 +65,7 @@ resource "aws_lambda_function" "lambda_visitor_count" {
 
   environment {
     variables = {
-      LOG_LEVEL   = "info"
+      LOG_LEVEL = "info"
     }
   }
 
