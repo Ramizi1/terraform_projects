@@ -16,7 +16,7 @@ resource "aws_apigatewayv2_route" "visitor_route" {
 }
 
 resource "aws_apigatewayv2_stage" "visitor_stage" {
-  api_id = aws_apigatewayv2_api.visitor_api.id
+  api_id      = aws_apigatewayv2_api.visitor_api.id
   name        = "$default"
   auto_deploy = true
 }
