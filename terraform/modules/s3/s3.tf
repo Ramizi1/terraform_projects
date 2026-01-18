@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "web_host" {
   bucket = "CV-Web-Bucket-48876"
 
-  tags   = {
+  tags = {
     Name = "web_host"
   }
 }
@@ -16,18 +16,18 @@ resource "aws_s3_bucket_website_configuration" "web_host" {
 
 # enable object versioning
 resource "aws_s3_bucket_versioning" "version" {
-    bucket = aws_s3_bucket.web_host.id
+  bucket = aws_s3_bucket.web_host.id
 
-    versioning_configuration {
-      status = "Enabled"
-    }
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_object" "index_html" {
-  bucket = aws_s3_bucket.web_host.id
-  key    = "index.html"
-  source = "${path.root}/../frontend/index.html"
-  etag = filemd5("${path.root}/../frontend/index.html")
+  bucket       = aws_s3_bucket.web_host.id
+  key          = "index.html"
+  source       = "${path.root}/../frontend/index.html"
+  etag         = filemd5("${path.root}/../frontend/index.html")
   content_type = "text/html"
 }
 
