@@ -22,17 +22,17 @@ resource "aws_s3_bucket_public_access_block" "web_host" {
 # CLOUDFRONT DISTRIBUTION
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name              = var.bucket_domain # <- use module input
+    domain_name              = var.bucket_domain
     origin_access_control_id = aws_cloudfront_origin_access_control.default.id
     origin_id                = local.s3_origin_id
   }
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "CloudFront distribution for ${var.domain_name}" # <- pass as input if needed
+  comment             = "CloudFront distribution for ${var.domain_name}"
   default_root_object = "index.html"
 
-  aliases = var.domain_aliases # <- optional variable array
+  aliases = var.domain_aliases
 
   default_cache_behavior {
     target_origin_id       = local.s3_origin_id
@@ -42,16 +42,49 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
     forwarded_values {
       query_string = false
-
       cookies {
         forward = "none"
       }
     }
   }
 
+  # ✅ REQUIRED: at least one restrictions block
+  restrictions {
+    geo_restriction {
+      restriction_type = "none" # no restrictions
+    }
+  }
+
   viewer_certificate {
-    acm_certificate_arn      = var.acm_cert_arn # <- use module input!
+    acm_certificate_arn      = var.acm_cert_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2019"
   }
+}
+
+
+resource "aws_s3_bucket_policy" "web_bucket_policy" {
+  bucket = var.bucket_id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontRead"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "arn:aws:s3:::${var.bucket_id}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
+          }
+        }
+      }
+    ]
+  })
+
+  depends_on = [aws_cloudfront_distribution.s3_distribution]
 }
