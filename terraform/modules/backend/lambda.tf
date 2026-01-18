@@ -1,9 +1,11 @@
+# Archive Python code for Lambda
 data "archive_file" "visitor_count" {
   type        = "zip"
-  source_file = "${path.module}/update_count.py"
+  source_file = "${path.root}/backend/update_count.py"
   output_path = "${path.module}/update_count_function.zip"
 }
 
+# IAM role for Lambda
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_role"
 
@@ -21,18 +23,19 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# Attach logging policy to Lambda role
+# Attach custom DynamoDB policy
 resource "aws_iam_role_policy_attachment" "lambda_role_attach" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }
 
-# Give Lambda permissions to write logs into CW
+# Attach basic Lambda logging policy
 resource "aws_iam_role_policy_attachment" "lambda_logs_attach" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# Custom policy to access DynamoDB
 resource "aws_iam_policy" "lambda_dynamodb_policy" {
   name = "lambda_dynamodb_policy"
 
@@ -53,15 +56,13 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
   })
 }
 
-# Lambda function to access table
+# Lambda function
 resource "aws_lambda_function" "lambda_visitor_count" {
   filename      = data.archive_file.visitor_count.output_path
   function_name = "lambda_visitor_count"
   role          = aws_iam_role.lambda_role.arn
   handler       = "update_count.lambda_handler"
-  code_sha256   = data.archive_file.visitor_count.output_base64sha256
-
-  runtime = "nodejs20.x"
+  runtime       = "nodejs20.x"
 
   environment {
     variables = {
