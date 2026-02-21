@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "web_host" {
-  bucket = "CV-Web-Bucket-48876"
+  bucket = "cv-web-bucket-48876"
 
   tags = {
     Name = "web_host"
@@ -35,5 +35,6 @@ resource "aws_s3_object" "resume_pdf" {
   bucket       = aws_s3_bucket.web_host.id
   key          = "resume.pdf"
   source       = "${path.root}/../frontend/resume.pdf"
+  etag         = filemd5("${path.module}/../../../frontend/resume.pdf")
   content_type = "application/pdf"
 }

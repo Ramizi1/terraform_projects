@@ -4,6 +4,7 @@ module "frontend_s3" {
 
 module "dns" {
   source = "./modules/route53"
+  acm_cert_arn = "arn:aws:acm:us-east-1:147237732413:certificate/33c96b5f-d9ff-428b-a987-8503be5d8264"
 }
 
 module "cdn" {

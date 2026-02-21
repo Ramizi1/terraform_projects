@@ -1,7 +1,7 @@
 # Archive Python code for Lambda
 data "archive_file" "visitor_count" {
   type        = "zip"
-  source_file = "${path.root}/backend/update_count.py"
+  source_file = "${path.module}/update_count.py" # this file MUST exist here
   output_path = "${path.module}/update_count_function.zip"
 }
 
@@ -62,7 +62,7 @@ resource "aws_lambda_function" "lambda_visitor_count" {
   function_name = "lambda_visitor_count"
   role          = aws_iam_role.lambda_role.arn
   handler       = "update_count.lambda_handler"
-  runtime       = "nodejs20.x"
+  runtime       = "python3.11"
 
   environment {
     variables = {
